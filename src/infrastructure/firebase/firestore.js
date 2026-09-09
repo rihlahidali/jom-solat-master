@@ -91,7 +91,7 @@ export async function clearLocalStorageAndFlushFirestore() {
   try {
     console.info("[Development] Clearing firestore. ⌛");
     await Axios(
-      `http://localhost:${fbConfig.emulators.firestore.port}/emulator/v1/projects/waktu-sembahyang-brunei/databases/(default)/documents`,
+      `http://localhost:${fbConfig.emulators.firestore.port}/emulator/v1/projects/jom-solat-master/databases/(default)/documents`,
       { method: "DELETE" }
     );
     console.info("[Development] Firestore flushed. ✅");

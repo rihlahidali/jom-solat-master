@@ -12,7 +12,7 @@ Ponytail full mode is the implementation filter for this repository.
 
 - Product: public prayer-time PWA for Brunei, sourced from KHEU.
 - Runtime: Vue 2.6 + Vue Router 3 + Vuex 3 + Vuetify 2, built by Vue CLI 4.
-- Persistence: Firebase project `waktu-sembahyang-brunei`. Collections `waktu` (one document per month) and `metadata/data` (integer `version`).
+- Persistence: Firebase project `jom-solat-master`. Collections `waktu` (one document per month) and `metadata/data` (integer `version`).
 - Cache: `localStorage.prayer_data` and `localStorage.local_storage_metadata`.
 - Hosting: Netlify SPA fallback in `netlify.toml`. PWA/service worker in production only.
 - Local backend: Firebase emulators, Auth port `9099`, Firestore port `8089`.
@@ -67,7 +67,7 @@ Observed cycles (keep until a real bug forces a split): `main.js` ↔ `Home.vue`
 ## 4. Repository structure (paths that exist)
 
 ```text
-waktu-sembahyang-brunei-vue-master/
+jom-solat-master-vue-master/
 ├── src/
 │   ├── main.js
 │   ├── App.vue

@@ -1,5 +1,5 @@
 {
-  "projectId": "waktu-sembahyang-brunei",
+  "projectId": "jom-solat-master",
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
