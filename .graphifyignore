@@ -1,0 +1,5 @@
+public/img/
+website/
+tests/e2e/videos/
+tests/e2e/screenshots/
+package-lock.json

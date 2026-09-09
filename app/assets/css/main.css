@@ -1,0 +1,25 @@
+:root {
+  --bg: #0c1210;
+  --text: #e8e4d8;
+  --mute: #8b9188;
+  --now: #d4b45a;
+  --rule: #24302b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Source Sans 3", sans-serif;
+}
+
+button,
+a {
+  font: inherit;
+}

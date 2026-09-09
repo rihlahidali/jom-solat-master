@@ -1,0 +1,38 @@
+[
+  {
+    "Imsak": "4.55",
+    "Asar": "3.47",
+    "Subuh": "5.05",
+    "Date": "1/1/2021",
+    "Tarikh": "17 Jamadilawal 1442",
+    "Syuruk": "6.28",
+    "Zuhur": "12.25",
+    "Duha": "6.53",
+    "Maghrib": "6.19",
+    "Isya": "7.34"
+  },
+  {
+    "Maghrib": "6.20",
+    "Asar": "3.47",
+    "Isya": "7.34",
+    "Zuhur": "12.25",
+    "Tarikh": "18 Jamadilawal 1442",
+    "Syuruk": "6.29",
+    "Imsak": "4.56",
+    "Duha": "6.53",
+    "Subuh": "5.06",
+    "Date": "2/1/2021"
+  },
+  {
+    "Duha": "6.53",
+    "Isya": "7.35",
+    "Imsak": "4.56",
+    "Asar": "3.48",
+    "Tarikh": "19 Jamadilawal 1442",
+    "Date": "3/1/2021",
+    "Maghrib": "6.20",
+    "Zuhur": "12.26",
+    "Syuruk": "6.29",
+    "Subuh": "5.06"
+  }
+]

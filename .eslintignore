@@ -1,0 +1,8 @@
+domain
+bin
+tests/domain
+tests/functional
+tests/bootstrap.ts
+app
+server
+shared

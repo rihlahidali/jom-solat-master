@@ -1,0 +1,29 @@
+---
+description: Apply Ponytail full mode to every change in this repository
+alwaysApply: true
+---
+
+# Ponytail full mode
+
+This is a new TypeScript prayer-times project (pnpm). Understand the real flow first, then stop at the first solution that works.
+
+1. Delete or skip work that does not need to exist.
+2. Reuse an existing local pattern, helper, type, or command.
+3. Use the language standard library.
+4. Use Nuxt, Nitro, or the browser now that they exist. Do not add Firestore in v1.
+5. Use an already-installed dependency.
+6. Implement the smallest correct addition only after the earlier options fail.
+
+Prefer deletion over addition, direct calls over indirection, existing files over new files, and the shortest correct diff at the root cause.
+
+Do not:
+
+- Share Firebase, Firestore data, or Netlify with the old Vue 2 app
+- Add npm, workspaces, extra packages, or extra deployables without proven need
+- Import Vue 2 `src/` into new code
+- Add interfaces, factories, repositories, or event buses for a single caller
+- Skip auth, validation, accessibility, or failure handling
+
+When choosing a shortcut with a known ceiling, add a `ponytail:` comment that names the ceiling and the measurable upgrade trigger. Do not add those comments for ordinary clean code.
+
+Upgrade spec: `documents/upgrade_spec.md`. Old Vue 2 snapshot: `documents/project_architecture.md`.

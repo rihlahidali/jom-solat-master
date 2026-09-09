@@ -1,0 +1,454 @@
+{
+  "communities": {
+    "0": [
+      "axios",
+      "babel_eslint",
+      "eslint",
+      "eslint_plugin_prettier",
+      "eslint_plugin_vue",
+      "node_sass",
+      "package_devdependencies",
+      "package_devdependencies_axios",
+      "package_devdependencies_babel_eslint",
+      "package_devdependencies_eslint",
+      "package_devdependencies_eslint_plugin_prettier",
+      "package_devdependencies_eslint_plugin_vue",
+      "package_devdependencies_node_sass",
+      "package_devdependencies_prettier",
+      "package_devdependencies_sass",
+      "package_devdependencies_sass_loader",
+      "package_devdependencies_vue_cli_plugin_babel",
+      "package_devdependencies_vue_cli_plugin_e2e_cypress",
+      "package_devdependencies_vue_cli_plugin_eslint",
+      "package_devdependencies_vue_cli_plugin_pwa",
+      "package_devdependencies_vue_cli_plugin_router",
+      "package_devdependencies_vue_cli_plugin_unit_jest",
+      "package_devdependencies_vue_cli_plugin_vuetify",
+      "package_devdependencies_vue_cli_plugin_vuex",
+      "package_devdependencies_vue_cli_service",
+      "package_devdependencies_vue_eslint_config_prettier",
+      "package_devdependencies_vue_template_compiler",
+      "package_devdependencies_vue_test_utils",
+      "package_devdependencies_vuetify_loader",
+      "prettier",
+      "sass",
+      "sass_loader",
+      "vue_cli_plugin_babel",
+      "vue_cli_plugin_e2e_cypress",
+      "vue_cli_plugin_eslint",
+      "vue_cli_plugin_pwa",
+      "vue_cli_plugin_router",
+      "vue_cli_plugin_unit_jest",
+      "vue_cli_plugin_vuetify",
+      "vue_cli_plugin_vuex",
+      "vue_cli_service",
+      "vue_eslint_config_prettier",
+      "vue_template_compiler",
+      "vue_test_utils",
+      "vuetify_loader"
+    ],
+    "1": [
+      "animate_css",
+      "core_js",
+      "date_fns",
+      "lodash",
+      "mdi_font",
+      "package_dependencies",
+      "package_dependencies_animate_css",
+      "package_dependencies_core_js",
+      "package_dependencies_date_fns",
+      "package_dependencies_lodash",
+      "package_dependencies_mdi_font",
+      "package_dependencies_push_js",
+      "package_dependencies_register_service_worker",
+      "package_dependencies_vue",
+      "package_dependencies_vue_gtag",
+      "package_dependencies_vue_resource",
+      "package_dependencies_vue_router",
+      "package_dependencies_vuetify",
+      "package_dependencies_vuex",
+      "push_js",
+      "register_service_worker",
+      "vue",
+      "vue_gtag",
+      "vue_resource",
+      "vue_router",
+      "vuetify",
+      "vuex"
+    ],
+    "2": [
+      "src_infrastructure_firebase_firestore",
+      "src_infrastructure_firebase_firestore_clearlocalstorageandflushfirestore",
+      "src_infrastructure_firebase_firestore_getfirestoreinstance",
+      "src_infrastructure_firebase_firestore_getmetadata",
+      "src_infrastructure_firebase_firestore_getmetadatadoc",
+      "src_infrastructure_firebase_firestore_getprayers",
+      "src_infrastructure_firebase_firestore_getwaktucollection",
+      "src_infrastructure_firebase_firestore_seeddata",
+      "src_infrastructure_firebase_firestore_updatemetadata",
+      "src_infrastructure_firebase_firestore_updateprayerbymonth",
+      "src_infrastructure_firebase_firestore_usefirebaseemulator",
+      "src_infrastructure_firebase_firestore_usefirestoreemulator",
+      "src_views_admin",
+      "src_views_admin_converttext",
+      "src_views_admin_created",
+      "src_views_admin_data",
+      "src_views_admin_isconvertable",
+      "src_views_admin_splittextby",
+      "src_views_admin_updateday",
+      "src_views_admin_uploaddata",
+      "tests_unit_firebase_firestore_getmetadata_spec",
+      "tests_unit_firebase_firestore_getprayers_spec",
+      "tests_unit_firebase_firestore_updatemetadata_spec",
+      "tests_unit_firebase_firestore_updateprayerbymonth_spec"
+    ],
+    "3": [
+      "src_views_home",
+      "src_views_home_adddt",
+      "src_views_home_data",
+      "src_views_home_displayprayertime",
+      "src_views_home_formatandpushprayerdatatodays",
+      "src_views_home_getdatedata",
+      "src_views_home_gethijrahdate",
+      "src_views_home_getmasihidate",
+      "src_views_home_getprayerdata",
+      "src_views_home_gettodayprayertime",
+      "src_views_home_hasdata",
+      "src_views_home_inittodaydate",
+      "src_views_home_isbeforezuhur",
+      "src_views_home_iscustomdatetime",
+      "src_views_home_isdebugging",
+      "src_views_home_isfirsthalfnight",
+      "src_views_home_isisyaandbeforemidnight",
+      "src_views_home_mounted",
+      "src_views_home_registereventbus",
+      "src_views_home_subdt",
+      "src_views_home_todaydate",
+      "src_views_home_updatedata",
+      "src_views_home_updateprayerdatabasedondistrict",
+      "src_views_home_updateprayertime"
+    ],
+    "4": [
+      "package",
+      "package_name",
+      "package_private",
+      "package_repository",
+      "package_repository_type",
+      "package_repository_url",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_firebase_emulator",
+      "package_scripts_generate_vuese",
+      "package_scripts_lint",
+      "package_scripts_serve",
+      "package_scripts_serve_vuese",
+      "package_scripts_test_e2e",
+      "package_scripts_test_unit",
+      "package_scripts_version_alpha_update",
+      "package_version",
+      "src_components_version",
+      "src_components_version_pjson",
+      "src_components_version_version"
+    ],
+    "5": [
+      "src_app",
+      "src_app_created",
+      "src_app_mounted",
+      "src_components_bottomnavigation",
+      "src_components_bottomnavigation_data",
+      "src_components_bottomnavigation_getselecteddistrict",
+      "src_components_bottomnavigation_mounted",
+      "src_components_bottomnavigation_refresh",
+      "src_components_bottomnavigation_updateselecteddistrict",
+      "src_main",
+      "src_main_eventbus",
+      "src_main_init",
+      "src_plugins_vuetify",
+      "src_router_index",
+      "src_router_index_router",
+      "src_router_index_routes"
+    ],
+    "6": [
+      "firebase",
+      "package_dependencies_firebase",
+      "src_infrastructure_firebase_auth",
+      "src_infrastructure_firebase_auth_createuser",
+      "src_infrastructure_firebase_auth_getauthinstance",
+      "src_infrastructure_firebase_auth_getcurrentuser",
+      "src_infrastructure_firebase_auth_seeddata",
+      "src_infrastructure_firebase_auth_signinuser",
+      "src_infrastructure_firebase_auth_signoutuser",
+      "src_infrastructure_firebase_auth_useauthemulator",
+      "src_infrastructure_firebase_config",
+      "src_infrastructure_firebase_index",
+      "src_infrastructure_firebase_index_firebase"
+    ],
+    "7": [
+      "src_store_module_prayers",
+      "src_store_module_prayers_checknewdata",
+      "src_store_module_prayers_getdatabasemetadatafromfirebase",
+      "src_store_module_prayers_getdatafromfirebase",
+      "src_store_module_prayers_getdatafromfirebaseandsavetoprayermodule",
+      "src_store_module_prayers_getdatafromlocalstorage",
+      "src_store_module_prayers_getmetadata",
+      "src_store_module_prayers_getprayerdata",
+      "src_store_module_prayers_getprayerstime",
+      "src_store_module_prayers_updatedatastatus",
+      "src_store_module_prayers_updatemetadata",
+      "src_store_module_prayers_updateprayer"
+    ],
+    "8": [
+      "src_mixins_global",
+      "src_mixins_global_isobject",
+      "src_mixins_global_notify",
+      "src_mixins_global_praseprayertime",
+      "src_mixins_global_push",
+      "src_mixins_global_requestpushpermission",
+      "src_mixins_global_wsbprint",
+      "tests_unit_global_spec",
+      "tests_unit_global_spec_render"
+    ],
+    "9": [
+      "src_store_index",
+      "src_store_index_notify",
+      "src_store_module_days",
+      "src_store_module_days_getcomputerdayname",
+      "src_store_module_days_getdisplaydayname",
+      "src_store_module_months",
+      "src_store_module_months_getalldisplaymonthname",
+      "src_store_module_months_getcomputermonthname",
+      "src_store_module_months_getdisplaymonthname"
+    ],
+    "10": [
+      "src_registerserviceworker",
+      "src_registerserviceworker_cached",
+      "src_registerserviceworker_error",
+      "src_registerserviceworker_offline",
+      "src_registerserviceworker_ready",
+      "src_registerserviceworker_registered",
+      "src_registerserviceworker_updated",
+      "src_registerserviceworker_updatefound"
+    ],
+    "11": [
+      "jsconfig",
+      "jsconfig_compileroptions",
+      "jsconfig_compileroptions_baseurl",
+      "jsconfig_compileroptions_paths",
+      "jsconfig_exclude",
+      "ref_dist",
+      "ref_node_modules"
+    ],
+    "12": [
+      "src_components_countdown",
+      "src_components_countdown_data",
+      "src_components_countdown_getstatus",
+      "src_components_countdown_handler",
+      "src_components_countdown_isactive",
+      "src_components_countdown_updatecountdown",
+      "src_components_countdown_updateprayertime"
+    ],
+    "13": [
+      "src_components_displayinfo",
+      "src_components_displayinfo_isvisible"
+    ],
+    "14": [
+      "tests_e2e_support_commands",
+      "tests_e2e_support_index"
+    ],
+    "15": [
+      "babel_config"
+    ],
+    "16": [
+      "eslintrc"
+    ],
+    "17": [
+      "jest_config"
+    ],
+    "18": [
+      "tests_e2e_eslintrc"
+    ],
+    "19": [
+      "tests_e2e_plugins_index"
+    ],
+    "20": [
+      "tests_e2e_specs_wsb"
+    ],
+    "21": [
+      "tests_unit_example_spec"
+    ],
+    "22": [
+      "vue_config"
+    ]
+  },
+  "cohesion": {
+    "0": 0.044444444444444446,
+    "1": 0.07407407407407407,
+    "2": 0.2028985507246377,
+    "3": 0.11956521739130435,
+    "4": 0.1,
+    "5": 0.16666666666666666,
+    "6": 0.2564102564102564,
+    "7": 0.25757575757575757,
+    "8": 0.2777777777777778,
+    "9": 0.2222222222222222,
+    "10": 0.25,
+    "11": 0.2857142857142857,
+    "12": 0.47619047619047616,
+    "13": 1.0,
+    "14": 1.0,
+    "15": 1.0,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0,
+    "21": 1.0,
+    "22": 1.0
+  },
+  "gods": [
+    {
+      "id": "package_scripts",
+      "label": "scripts",
+      "degree": 10
+    },
+    {
+      "id": "src_infrastructure_firebase_firestore_usefirebaseemulator",
+      "label": "useFirebaseEmulator()",
+      "degree": 7
+    },
+    {
+      "id": "src_infrastructure_firebase_auth_getauthinstance",
+      "label": "getAuthInstance()",
+      "degree": 7
+    },
+    {
+      "id": "src_infrastructure_firebase_firestore_clearlocalstorageandflushfirestore",
+      "label": "clearLocalStorageAndFlushFirestore()",
+      "degree": 6
+    },
+    {
+      "id": "src_infrastructure_firebase_firestore_getfirestoreinstance",
+      "label": "getFirestoreInstance()",
+      "degree": 6
+    },
+    {
+      "id": "src_infrastructure_firebase_firestore_getmetadata",
+      "label": "getMetadata()",
+      "degree": 6
+    },
+    {
+      "id": "src_infrastructure_firebase_firestore_getprayers",
+      "label": "getPrayers()",
+      "degree": 6
+    },
+    {
+      "id": "src_infrastructure_firebase_firestore_seeddata",
+      "label": "seedData()",
+      "degree": 6
+    },
+    {
+      "id": "src_infrastructure_firebase_firestore_updatemetadata",
+      "label": "updateMetadata()",
+      "degree": 6
+    },
+    {
+      "id": "src_infrastructure_firebase_firestore_updateprayerbymonth",
+      "label": "updatePrayerByMonth()",
+      "degree": 6
+    }
+  ],
+  "surprises": [
+    {
+      "source": "getDatabaseMetaDataFromFirebase()",
+      "target": "getMetadata()",
+      "source_files": [
+        "src/store/module/Prayers.js",
+        "src/infrastructure/firebase/firestore.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "getDataFromFirebaseAndSaveToPrayerModule()",
+      "target": "getPrayers()",
+      "source_files": [
+        "src/store/module/Prayers.js",
+        "src/infrastructure/firebase/firestore.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "init()",
+      "target": "useFirestoreEmulator()",
+      "source_files": [
+        "src/main.js",
+        "src/infrastructure/firebase/firestore.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "init()",
+      "target": "useAuthEmulator()",
+      "source_files": [
+        "src/main.js",
+        "src/infrastructure/firebase/auth.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "uploadData()",
+      "target": "updateMetadata()",
+      "source_files": [
+        "src/views/Admin.vue",
+        "src/infrastructure/firebase/firestore.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "cross-file semantic connection"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `dependencies` connect `Community 1` to `Community 4`, `Community 6`?",
+      "why": "High betweenness centrality (0.465) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `firebase` connect `Community 6` to `Community 2`?",
+      "why": "High betweenness centrality (0.394) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `firebase` connect `Community 6` to `Community 1`?",
+      "why": "High betweenness centrality (0.391) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `axios`, `babel-eslint`, `eslint` to the rest of the system?",
+      "why": "55 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 0` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.044444444444444446 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 1` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.07407407407407407 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 3` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.11956521739130435 - nodes in this community are weakly interconnected."
+    }
+  ]
+}
