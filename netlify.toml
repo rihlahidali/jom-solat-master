@@ -5,6 +5,7 @@
 [build.environment]
   NODE_VERSION = "22"
   NITRO_PRESET = "netlify"
+  PNPM_APPROVE_BUILDS = "1"
 
 [functions]
   [functions."api/ingest"]
