@@ -8,9 +8,7 @@ const hasBlobEnv =
   process.env.NETLIFY_BLOBS_SITE_ID &&
   process.env.NETLIFY_BLOBS_TOKEN;
 
-let blobsClient: Awaited<
-  ReturnType<typeof import("@netlify/blobs").getStore>
-> | null = null;
+let blobsClient: unknown | null = null;
 
 async function getBlobs() {
   if (!blobsClient && hasBlobEnv) {
@@ -21,7 +19,10 @@ async function getBlobs() {
       token: process.env.NETLIFY_BLOBS_TOKEN!,
     });
   }
-  return blobsClient;
+  return blobsClient as {
+    get: (key: string, opts?: { type?: string }) => Promise<string | undefined>;
+    setJSON: (key: string, value: unknown) => Promise<void>;
+  } | null;
 }
 
 export async function getTimetable(): Promise<TimetableYear> {
