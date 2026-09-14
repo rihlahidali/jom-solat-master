@@ -18,7 +18,18 @@ export function getPrayerClock(
   now: Date,
   warningMinutes: number = WARNING_MINUTES
 ): PrayerClock {
-  let currentPrayer = prayers[0]?.name ?? "Imsak";
+  if (prayers.length === 0) {
+    return {
+      currentPrayer: "Imsak",
+      currentPrayerIndex: 0,
+      nextPrayer: { name: "Subuh", index: 1 },
+      isIn: false,
+      isWarning: false,
+      countdown: "—",
+    };
+  }
+
+  let currentPrayer = prayers[0]!.name;
   let currentPrayerIndex = 0;
   let nextIndex = 1;
   let isIn = false;
@@ -26,7 +37,7 @@ export function getPrayerClock(
   const core = prayers.slice(0, CORE_PRAYER_COUNT);
 
   for (let index = 0; index < core.length; index += 1) {
-    const prayer = core[index];
+    const prayer = core[index]!;
     const started = isAfter(now, subSeconds(prayer.time, 1));
     const sameMinute =
       prayer.time.getMinutes() === now.getMinutes() &&
@@ -39,7 +50,7 @@ export function getPrayerClock(
       isIn = sameMinute;
     }
 
-    if (isBefore(now, core[0].time)) {
+    if (isBefore(now, core[0]!.time)) {
       currentPrayer = "Isya";
       currentPrayerIndex = 7;
       nextIndex = 0;
@@ -48,7 +59,7 @@ export function getPrayerClock(
   }
 
   const nextPrayer = prayers[nextIndex];
-  const nextTime = nextPrayer?.time ?? core[0].time;
+  const nextTime = nextPrayer?.time ?? core[0]!.time;
   const countdown = formatCountdown(now, nextTime);
   const isWarning =
     differenceInSeconds(nextTime, now) < warningMinutes * 60 &&

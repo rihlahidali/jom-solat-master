@@ -10,6 +10,11 @@ export default defineNuxtConfig({
   alias: {
     "#domain": join(root, "domain"),
   },
+  runtimeConfig: {
+    public: {
+      gaMeasurementId: process.env.NUXT_PUBLIC_GA_MEASUREMENT_ID || "",
+    },
+  },
   app: {
     head: {
       title: "Waktu Sembahyang Brunei",
@@ -24,6 +29,17 @@ export default defineNuxtConfig({
         {
           rel: "stylesheet",
           href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Source+Sans+3:wght@400;600&display=swap",
+        },
+        { rel: "manifest", href: "/manifest.webmanifest" },
+      ],
+      script: [
+        {
+          src: "https://www.googletagmanager.com/gtag/js",
+          async: true,
+          ...(() => {
+            const id = process.env.NUXT_PUBLIC_GA_MEASUREMENT_ID;
+            return id ? { "data-id": id } : {};
+          })(),
         },
       ],
     },

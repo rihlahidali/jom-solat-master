@@ -46,16 +46,16 @@ function parseTsvRow(line: string, index: number): PrayerDay {
   }
 
   return prayerDayFromCells({
-    gregorian: cells[0],
-    hijri: cells[1],
-    imsak: cells[2],
-    subuh: cells[3],
-    syuruk: cells[4],
-    duha: cells[5],
-    zuhur: cells[6],
-    asar: cells[7],
-    maghrib: cells[8],
-    isya: cells[9],
+    gregorian: cells[0]!,
+    hijri: cells[1]!,
+    imsak: cells[2]!,
+    subuh: cells[3]!,
+    syuruk: cells[4]!,
+    duha: cells[5]!,
+    zuhur: cells[6]!,
+    asar: cells[7]!,
+    maghrib: cells[8]!,
+    isya: cells[9]!,
   });
 }
 

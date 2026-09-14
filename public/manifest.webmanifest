@@ -1,0 +1,21 @@
+{
+  "name": "Jom Solat",
+  "short_name": "Jom Solat",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0c1210",
+  "theme_color": "#0c1210",
+  "description": "Jadual waktu sembahyang rasmi KHEU untuk Brunei.",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

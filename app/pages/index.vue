@@ -1,115 +1,161 @@
 <script setup lang="ts">
-import type { PrayerDay } from "#domain/prayer/prayer";
+import type { DaySchedule, PrayerDay } from "#domain/prayer/prayer";
 import type { TimetableYear } from "#shared/types/timetable";
+import { buildThreeDayWindow } from "#domain/prayer/day_schedule";
+
+const { district } = useDistrict();
+const activeDayIndex = ref(0);
 
 type PrayersResponse = TimetableYear & { availableMonths: number[] };
 
-const { data, error } = await useFetch<PrayersResponse>("/api/prayers");
+const { data } = await useFetch<PrayersResponse>("/api/prayers");
 
-const previewDays = computed(() => {
-  const months = data.value?.months ?? {};
-  const firstMonth = data.value?.availableMonths[0];
-  if (!firstMonth) {
-    return [] as PrayerDay[];
+const daysByIso = computed(() => {
+  const map: Record<string, PrayerDay> = {};
+  if (!data.value) return map;
+  for (const month of data.value.availableMonths) {
+    const days = data.value.months[String(month)] ?? [];
+    for (const day of days) {
+      map[day.gregorian] = day;
+    }
   }
-  return (months[String(firstMonth)] ?? []).slice(0, 3);
+  return map;
 });
 
-const monthLabel = computed(() => {
-  const month = data.value?.availableMonths[0];
-  if (!month || !data.value) {
-    return "";
+const now = new Date();
+const threeDays = computed<DaySchedule[]>(() => {
+  if (!data.value) return [];
+  try {
+    return buildThreeDayWindow(daysByIso.value, now, district.value);
+  } catch {
+    return [];
   }
-  return new Intl.DateTimeFormat("ms-BN", {
-    month: "long",
-    year: "numeric",
-  }).format(new Date(data.value.year, month - 1, 1));
 });
+
+const activeDay = computed(() => threeDays.value[activeDayIndex.value] ?? null);
+
+const { clock } = usePrayerClock(
+  computed(() => activeDay.value?.prayers ?? [])
+);
+
+const { permission, requestPermission, notify } = useNotifications();
+const previousPrayer = ref<string | null>(null);
+
+watch(
+  () => clock.value.currentPrayer,
+  (current) => {
+    if (
+      current &&
+      previousPrayer.value !== null &&
+      previousPrayer.value !== current &&
+      clock.value.isIn
+    ) {
+      const prayerTime = activeDay.value?.prayers[clock.value.currentPrayerIndex];
+      if (prayerTime) {
+        const hours = prayerTime.time.getHours();
+        const minutes = prayerTime.time.getMinutes();
+        const pad = (n: number) => `${n < 10 ? "0" : ""}${n}`;
+        notify(current, `${pad(hours)}:${pad(minutes)}`);
+      }
+    }
+    previousPrayer.value = current;
+  }
+);
 </script>
 
 <template>
-  <main class="hall">
-    <p class="kicker">Waktu Sembahyang Brunei</p>
-    <h1>Jadual rasmi KHEU</h1>
+  <main class="home">
+    <template v-if="!data || threeDays.length === 0">
+      <p class="empty">Belum ada jadual.</p>
+    </template>
+    <template v-else>
+      <DayStrip v-model:activeIndex="activeDayIndex" :days="threeDays" />
 
-    <p v-if="error" class="status">Tidak dapat memuat jadual.</p>
-    <p v-else-if="!data || data.availableMonths.length === 0" class="status">
-      Belum ada jadual. Ingest automatik datang dalam fasa 4.
-    </p>
-    <section v-else>
-      <p class="status">
-        {{ monthLabel }} · versi {{ data.version }} ·
-        {{ data.availableMonths.length }} bulan disimpan
-      </p>
-      <ol class="days">
-        <li v-for="day in previewDays" :key="day.gregorian">
-          <p class="date">{{ day.gregorian }} · {{ day.hijri }}</p>
-          <p class="times">
-            Imsak {{ day.imsak }} · Subuh {{ day.subuh }} · Maghrib
-            {{ day.maghrib }} · Isya {{ day.isya }}
-          </p>
-        </li>
-      </ol>
-    </section>
+      <section v-if="activeDay" class="clock-main">
+        <PrayerNow :day="activeDay" :clock="clock" />
+        <PrayerList :day="activeDay" :clock="clock" />
+      </section>
 
-    <p class="source">
-      Sumber:
-      <a href="https://www.mora.gov.bn/lists/waktusolat/waktusolat.aspx">
-        Kementerian Hal Ehwal Ugama
-      </a>
-    </p>
+      <div class="district-bar-anchor">
+        <DistrictBar v-model:district="district" />
+        <button
+          v-if="permission !== 'granted'"
+          class="notify-btn"
+          @click="requestPermission"
+        >
+          {{ permission === "denied" ? "Notifikasi diblokir" : "Aktifkan notifikasi" }}
+        </button>
+      </div>
+    </template>
   </main>
 </template>
 
 <style scoped>
-.hall {
-  max-width: 40rem;
+.home {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 3rem 1.5rem 4rem;
+  padding: 1.5rem;
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
 }
 
-.kicker,
-.status,
-.source,
-.times {
+.empty {
   color: var(--mute);
+  text-align: center;
+  padding: 4rem 1rem;
 }
 
-.kicker {
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.clock-main {
+  display: grid;
+  gap: 2rem;
+}
+
+.district-bar-anchor {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  padding: 0.75rem 1rem;
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.notify-btn {
+  appearance: none;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--mute);
+  padding: 0.375rem 0.625rem;
+  font-family: "Source Sans 3", sans-serif;
   font-size: 0.75rem;
+  cursor: pointer;
 }
 
-h1 {
-  font-family: Fraunces, serif;
-  font-weight: 500;
-  font-size: clamp(2rem, 6vw, 3.25rem);
-  margin: 0.5rem 0 1.5rem;
-}
+@media (min-width: 768px) {
+  .home {
+    padding: 2.5rem 1.5rem;
+    padding-bottom: 2.5rem;
+  }
 
-.days {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 2rem;
-  border-top: 1px solid var(--rule);
-}
+  .clock-main {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
 
-.days li {
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--rule);
-}
-
-.date {
-  margin: 0 0 0.35rem;
-}
-
-.times {
-  margin: 0;
-  font-variant-numeric: tabular-nums;
-}
-
-.source a {
-  color: var(--now);
+  .district-bar-anchor {
+    position: static;
+    background: transparent;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 }
 </style>

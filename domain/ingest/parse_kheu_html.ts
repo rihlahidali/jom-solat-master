@@ -20,7 +20,9 @@ export function parseKheuHtml(html: string): PrayerDay[] {
     throw new Error("KHEU HTML is missing table.ms-listviewtable");
   }
 
-  const rows = [...table.matchAll(ROW_RE)].map((match) => match[1]);
+  const rows = [...table.matchAll(ROW_RE)]
+    .map((match) => match[1])
+    .filter((row): row is string => row !== undefined);
   if (rows.length === 0) {
     throw new Error("KHEU HTML table has no rows");
   }
@@ -30,7 +32,7 @@ export function parseKheuHtml(html: string): PrayerDay[] {
 
   for (const row of rows) {
     const headerCells = [...row.matchAll(HEADER_CELL_RE)].map((match) =>
-      headerLabel(match[0], match[1])
+      headerLabel(match[0], match[1]!)
     );
     if (headerCells.length > 0) {
       headers = headerCells;
@@ -38,7 +40,7 @@ export function parseKheuHtml(html: string): PrayerDay[] {
     }
 
     const values = [...row.matchAll(DATA_CELL_RE)].map((match) =>
-      stripMarkup(match[1])
+      stripMarkup(match[1]!)
     );
     if (values.length < 10) {
       continue;

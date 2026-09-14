@@ -24,15 +24,15 @@ export const MONTH_NAMES = [
 ] as const;
 
 export function weekdayName(jsDay: number): string {
-  return WEEKDAYS[jsDay];
+  return WEEKDAYS[jsDay]!;
 }
 
 export function monthDisplayName(jsMonth: number): string {
-  return MONTH_NAMES[jsMonth];
+  return MONTH_NAMES[jsMonth]!;
 }
 
 export function monthKey(jsMonth: number): string {
-  return MONTH_NAMES[jsMonth].toLowerCase();
+  return MONTH_NAMES[jsMonth]!.toLowerCase();
 }
 
 export function formatGregorianLabel(date: Date): string {

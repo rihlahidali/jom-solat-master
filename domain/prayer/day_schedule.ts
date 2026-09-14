@@ -54,7 +54,7 @@ export function attachNextImsakSubuh(
 ): DaySchedule {
   return {
     ...today,
-    prayers: [...today.prayers, tomorrow.prayers[0], tomorrow.prayers[1]],
+    prayers: [...today.prayers, tomorrow.prayers[0]!, tomorrow.prayers[1]!],
   };
 }
 
@@ -75,6 +75,6 @@ export function buildThreeDayWindow(
     schedules.push(scheduleDay(day, date, district));
   }
 
-  schedules[0] = attachNextImsakSubuh(schedules[0], schedules[1]);
+  schedules[0] = attachNextImsakSubuh(schedules[0]!, schedules[1]!);
   return schedules;
 }

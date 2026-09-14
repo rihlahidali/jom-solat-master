@@ -1,8 +1,8 @@
 # Project architecture — Waktu Sembahyang Brunei
 
-**As-is:** a **single-package Vue 2 SPA** with **one Firestore database** and **one static deploy**.
+**As-is:** a **single-package Nuxt 4 + TypeScript app** with **file-backed JSON timetable** and **Netlify deploy**.
 
-**Target:** a **new** Nuxt 4 + TypeScript app on **pnpm**, own Firebase, own Netlify site. See [`documents/upgrade_spec.md`](upgrade_spec.md). This file is a snapshot of the old Vue 2 app only.
+**Upgrade plan:** [`documents/upgrade_spec.md`](upgrade_spec.md). Upgrade plan document: [`documents/upgrade_plan.md`](upgrade_plan.md).
 
 Ponytail full mode is the implementation filter for this repository.
 
@@ -11,264 +11,350 @@ Ponytail full mode is the implementation filter for this repository.
 ### Known facts
 
 - Product: public prayer-time PWA for Brunei, sourced from KHEU.
-- Runtime: Vue 2.6 + Vue Router 3 + Vuex 3 + Vuetify 2, built by Vue CLI 4.
-- Persistence: Firebase project `jom-solat-master`. Collections `waktu` (one document per month) and `metadata/data` (integer `version`).
-- Cache: `localStorage.prayer_data` and `localStorage.local_storage_metadata`.
-- Hosting: Netlify SPA fallback in `netlify.toml`. PWA/service worker in production only.
-- Local backend: Firebase emulators, Auth port `9099`, Firestore port `8089`.
-- Package manager: npm with `package-lock.json`. App version `3.0.0`.
-- Analytics: `vue-gtag` with measurement ID `G-C2E9CKWZCC` in production.
-- Graphify map (2026-09-05, code-only): 233 nodes, 302 edges, 23 communities. God nodes cluster around Firestore helpers and npm `scripts`.
+- Runtime: Nuxt 4 (Vue 3 + Vite + TypeScript strict).
+- Persistence: `server/data/timetable.json` in development; Netlify Blobs in production.
+- Cache: versioned year JSON in `localStorage`.
+- Hosting: Netlify with Nitro preset; scheduled function for ingest.
+- Package manager: pnpm with committed `pnpm-lock.yaml`.
+- Tests: Japa for domain + functional; browser tests deferred.
+- Analytics: Google Analytics via `NUXT_PUBLIC_GA_MEASUREMENT_ID`.
+- Graphify map: 460 nodes, code-only extraction.
 
 ### Assumptions
 
 - One operator maintains monthly uploads; public users only read times.
 - Traffic is national-app scale, not a multi-tenant SaaS.
-- Official times remain a monthly paste from KHEU rather than a live government API.
+- Official times remain a monthly ingest from KHEU HTML.
 
 ### Constraints
 
-- Vue CLI 4 / Vue 2 stack; Node and sass tooling are dated.
-- Firestore month document IDs for Oct–Dec are `910`/`911`/`912`.
-- Firebase web config is compiled into the client (normal for Firebase web apps).
+- No Firestore, no Firebase, no Vue 2.
+- Single deployable, no extra packages.
+- Month documents are `1`–`12` from day one.
 
-### Non-goals (now)
+### Non-goals (v1)
 
-- Native mobile apps, user accounts for the public, calculation of times from astronomy, multi-country support, TypeScript migration, Vue 3 migration, pnpm migration.
+- Native apps, accounts for the public, English i18n, light theme, qibla compass, maps, Vue 2 compatibility layer, Vitest, npm, PostgreSQL, microservices, AdonisJS.
 
 ## 2. System shape
 
-**Chosen:** single-package modular SPA.
+**Chosen:** single-package modular app with Nitro server routes.
 
-| Alternative | Why rejected now |
+| Alternative | Why rejected |
 | --- | --- |
-| Modular monolith API + DB | No server of our own; Firestore is the backend |
-| Monorepo with apps/packages | One deployable, one team, no second consumer |
-| Microservices | No independent ownership, scale, or release need |
+| Stay Vue 2, extract domain only | Rejected. Does not give TypeScript enforcement or a modern UI runtime. |
+| Vue 3 + Vite SPA | Smaller than Nuxt, but ingest still needs a server or an external cron. |
+| **Nuxt 4 app + Nitro** | **Chosen.** One deployable: typed UI, server ingest route, file-based routing. |
+| Nuxt + separate Adonis/API package | Rejected. Two apps and a shared package with one consumer. |
+| Calculated prayer API | Rejected. Different numbers than KHEU. |
 
-Business modules live as Vuex modules + views, not as workspace packages.
+Nitro is not a second product. It is the server half of the same Nuxt app.
 
 ## 3. Modules, ownership, boundaries
 
-| Module | Owns | Public surface | Depends on |
+| Module | Owns | Public API | Must not |
 | --- | --- | --- | --- |
-| Prayer display (`views/Home.vue`, `components/*`) | Rendering today+2 days, countdown, Hijri/Gregorian labels | Route `/` | `prayers`, `days`, `months`, `eventBus` |
-| District selection (`BottomNavigation.vue`) | Selected district + offsets applied in Home | `districtClicked` on `eventBus` | `localStorage` |
-| Prayer catalog (`store/module/Prayers.js`) | Year of times, metadata version, fetch/cache policy | Vuex `prayers/*` | Firestore |
-| Calendar labels (`Days.js`, `Months.js`) | Malay day names, English month names, month IDs | Vuex getters | nothing |
-| Admin ingest (`views/Admin.vue`) | TSV parse + upload + version bump | Route `/admin` | Firestore |
-| Firebase infra (`src/infrastructure/firebase/`) | App init, Firestore CRUD, Auth helpers, emulator seed | exported functions | Firebase SDK |
-| Notifications (`mixins/global.js`) | Push permission + snackbar | `$push`, `$notify` | `push.js`, Vuex root |
-
-Dependency direction: views → Vuex → Firebase. Do not import views from infrastructure.
-
-Observed cycles (keep until a real bug forces a split): `main.js` ↔ `Home.vue` / `BottomNavigation.vue` via `eventBus`.
+| `domain/prayer` | Types, parse, district offset, current/next prayer, countdown, Hijri display bump, month IDs | named functions + types | know Vue, Nitro, or Blobs |
+| `domain/ingest` | Normalize KHEU column aliases, parse HTML/JSON fixtures, reject incomplete months | `parseKheuHtml`, `parseKheuSharePointRows`, `parseKheuTsv`, `assertCompleteMonth` | fetch HTTP |
+| `server/kheu` | Fetch + HTML table extract | `fetchKheuMonth(year, month)` | contain prayer math |
+| `server/timetable` | Year JSON read/write + version bump | `getTimetable`, `replaceTimetable`, `replaceMonth` | parse HTML |
+| `app` | Layout, typography, gestures, a11y | pages/components | reimplement domain |
 
 ## 4. Repository structure (paths that exist)
 
 ```text
-jom-solat-master-vue-master/
-├── src/
-│   ├── main.js
-│   ├── App.vue
-│   ├── router/index.js
-│   ├── store/
-│   │   ├── index.js
-│   │   └── module/{Prayers,Days,Months}.js
-│   ├── views/{Home,Admin}.vue
-│   ├── components/{CountDown,DisplayInfo,BottomNavigation,Version}.vue
-│   ├── mixins/global.js
-│   ├── plugins/vuetify.js
-│   └── infrastructure/firebase/{index,config,firestore,auth}.js
-├── tests/{unit,e2e}/
+jom-solat-master/
+├── app/                          # Nuxt srcDir — UI
+│   ├── app.vue
+│   ├── assets/css/main.css
+│   ├── components/
+│   │   ├── prayer-now.vue
+│   │   ├── prayer-list.vue
+│   │   ├── day-strip.vue
+│   │   └── district-bar.vue
+│   ├── composables/
+│   │   ├── use_prayer_clock.ts
+│   │   ├── use_district.ts
+│   │   └── use_notifications.ts
+│   ├── pages/
+│   │   └── index.vue
+│   └── layouts/default.vue
+├── domain/
+│   ├── prayer/
+│   │   ├── prayer.ts
+│   │   ├── parse_time.ts
+│   │   ├── district.ts
+│   │   ├── current_prayer.ts
+│   │   ├── hijri_display.ts
+│   │   ├── calendar.ts
+│   │   ├── month_id.ts
+│   │   └── day_schedule.ts
+│   └── ingest/
+│       ├── parse_kheu_table.ts
+│       ├── parse_kheu_html.ts
+│       ├── parse_kheu_sharepoint.ts
+│       ├── complete_month.ts
+│       └── kheu_source.ts
+├── server/
+│   ├── api/
+│   │   ├── prayers.get.ts
+│   │   ├── ingest.post.ts
+│   │   ├── admin.get.ts
+│   │   └── admin.post.ts
+│   ├── utils/
+│   │   ├── kheu_html.ts
+│   │   └── timetable_store.ts
+│   └── data/
+│       └── timetable.json
+├── shared/
+│   └── types/
+│       └── timetable.ts
+├── tests/
+│   ├── bootstrap.ts
+│   ├── domain/                    # Japa unit tests for domain
+│   └── functional/                # ingest HTML/JSON fixtures
+│       └── fixtures/
 ├── public/
-├── website/                 # vuese component docs
-├── documents/project_architecture.md
+│   └── manifest.webmanifest
+├── documents/
+│   ├── upgrade_spec.md
+│   ├── upgrade_plan.md
+│   └── project_architecture.md   # this file
 ├── graphify-out/
-├── firebase.json
-├── firestore.rules
+├── nuxt.config.ts
 ├── netlify.toml
+├── tsconfig.json
+├── tsconfig.domain.json
 └── package.json
 ```
 
-Do not add `apps/`, `packages/`, or `platform/` folders. They are not justified.
+Aliases: `#domain` → `./domain`, `#shared` → `./shared`. `@` stays Nuxt’s `app/`.
+
+No `packages/`, no `apps/`.
 
 ## 5. Critical flows
 
-### Read prayer times (public)
+### Public read
 
 ```text
-browser GET /
-  -> App created: dispatch prayers/getPrayerData
-  -> localStorage hit? hydrate Vuex and set hasData
-  -> compare metadata.version with Firestore
-  -> if missing or stale: getDocs(waktu), write Vuex + localStorage
-  -> Home formats today/tomorrow/day-after, applies district minutes
-  -> CountDown emits current/next prayer; DisplayInfo highlights the active row
-  -> at prayer start: $push + snackbar
+GET /
+  -> server prayers.get (or client after first paint)
+  -> timetable year + version (JSON file locally, Netlify Blobs in prod)
+  -> client cache (localStorage) if version matches
+  -> domain: pick today+2 days, apply district, current/next prayer
+  -> render
 ```
 
-Failure: fetch errors are `console.error`; UI stays on the previous cache or the loader.
+Failure: show last good cache; if none, a single quiet empty state. Never a spinner forever.
 
-### Admin upload
+### Automatic ingest
 
 ```text
-paste TSV -> convertText (tab/newline split, `:` to `.`)
-  -> updatePrayerByMonth(monthId, days)  // setDoc waktu/{id} { Day: [...] }
-  -> updateMetadata(localVersion + 1)
-  -> clients refresh on next version check
+schedule (daily) POST /api/ingest  (Authorization: Bearer INGEST_SECRET)
+  -> for current month (and next month if published)
+  -> fetch KHEU HTML
+  -> domain parse + completeness check
+  -> if identical to stored month, no-op
+  -> else replace month + increment version
+  -> log month, row count, version; no full timetable in logs
 ```
 
-Failure: button loading flag is not cleared in `catch`. No auth check. No schema validation beyond split columns.
+Locked fetch (phase 1b):
+1. **HTML (years in the page dropdown, currently 2011–2025).** `GET https://www.mora.gov.bn/lists/waktusolat/waktusolat.aspx`, read `__VIEWSTATE` / `__VIEWSTATEGENERATOR` / `__EVENTVALIDATION`, then `POST` the same URL with `ctl00$PlaceHolderMain$Dropmonth` (`Jan`…`Dec`), `ctl00$PlaceHolderMain$Dropyear`, and `ctl00$PlaceHolderMain$btncari=Cari`.
+2. **All Items JSON (years the dropdown omits, including 2026).** `GET https://www.mora.gov.bn/lists/waktusolat/allitems.aspx?FilterField1=Month&FilterValue1=Jan&FilterField2=Year&FilterValue2=2026`. Parse `var WPQ*ListData = { "Row": [...] }`. Rows are newest-first.
 
-### Local development
+Fallback: signed-in `/admin` paste of TSV/HTML, same domain parsers.
 
-```text
-npm run firebase:emulator
-npm run serve
-  -> NODE_ENV != production
-  -> connect Firestore/Auth emulators
-  -> clear localStorage, DELETE emulator documents, seed dummy year + admin user
-```
+### Admin
 
-### Async work
+`ADMIN_SECRET` required. Sync-now button hits ingest. Paste remains for emergency.
 
-None durable. Version check is a best-effort follow-up promise. No queues.
+### Notifications
+
+Notify at prayer start; highlight starts 15 minutes before. Domain decides; composable calls the Notification API.
 
 ## 6. Data
 
-**Authoritative store:** Firestore.
+One JSON document for the year (about 12 months, well under 1 MB):
 
-- `waktu/{monthId}` → `{ Day: PrayerDay[] }` where `PrayerDay` has `Date`, `Tarikh`, `Imsak`, `Subuh`, `Syuruk`, `Duha`, `Zuhur`, `Asar`, `Maghrib`, `Isya` as strings like `"5.04"`.
-- `metadata/data` → `{ data: { version: number } }`.
+```text
+{
+  year: number
+  version: number
+  ingestedAt: string | null
+  source: 'kheu' | 'admin' | null
+  months: { "1": PrayerDay[], ... "12": PrayerDay[] }
+}
+```
 
-**Client cache:** full year JSON in `localStorage`. Eventual consistency is acceptable; a stale day until the version check completes is fine.
+Local: `server/data/timetable.json` (committed seed until ingest writes). Production: the same shape in **Netlify Blobs** so a new month does not need a deploy.
 
-**Transactions:** single `setDoc` per month plus a separate metadata write. Not atomic. A crash between them can leave new times with an old version (clients will not refresh) or the reverse.
+`PrayerDay` (domain + stored):
 
-**Time:** wall-clock `Date` in the browser; prayer strings are parsed with am/pm from `prayer_name`. No UTC store.
+```ts
+{
+  gregorian: string    // ISO date YYYY-MM-DD
+  hijri: string        // KHEU label, e.g. "19 Jamadilakhir 1445"
+  imsak: string        // "HH:mm" 24h
+  subuh: string
+  syuruk: string
+  duha: string
+  zuhur: string
+  asar: string
+  maghrib: string
+  isya: string
+}
+```
 
-**Retention:** yearly replacement via admin upload. No personal data besides optional notification permission.
+Writes: replace the year JSON in one put; accept a retry (ingest is idempotent).
 
-**Backup:** Firebase project backups; not automated in this repo.
+Retention: replace in place by month. Cache: versioned year JSON in `localStorage`.
 
-**Recovery:** re-upload the month from KHEU TSV.
+## 7. Security
 
-## 7. Security and observability
+- Public **read** only through `GET /api/prayers` (and the HTML page). No client writes.
+- `/api/ingest`: `INGEST_SECRET` header. Netlify cron only.
+- `/admin`: `ADMIN_SECRET` (or later one operator login). Server checks before paste/sync.
+- Secrets in env, not source.
 
-| Control | Current state | Action |
+## 8. TypeScript and tests (Japa)
+
+`typescript.strict: true`. `vue-tsc` in `check`. Domain files: ESLint `no-restricted-imports` for `vue` and `firebase`.
+
+Japa is the runner. Do **not** add Vitest in v1.
+
+| Suite | Path | Proves |
 | --- | --- | --- |
-| Authn | Auth helpers exist; `/admin` does not use them | **Fix now** before any production write hardening |
-| Authz | `firestore.rules` allow `read, write` on all documents | **Fix now**: public read on `waktu`/`metadata`; authenticated write only |
-| Secrets | Firebase web API key in `src/infrastructure/firebase/config.js` | Keep (browser keys); restrict by HTTP referrer in Firebase console |
-| Emulator password | `admin@wsb.com` / `!Password1` in `auth.js` | Acceptable for emulator only; never use in production |
-| Validation | Admin TSV is unsanitized | **Improve incrementally**: reject wrong column counts |
-| Logging | `console.log` / `console.error`; GA in production | Keep; do not log prayer dumps at volume |
-| Rate limit | None | Defer; static hosting + Firestore quotas |
+| unit | `tests/domain` | parse, offsets, current/next prayer, countdown, Hijri bump, month completeness |
+| functional | `tests/functional` | ingest against HTML/TSV fixtures; API 401 without secret; idempotent write |
+| browser | `tests/browser` | home clock, district change, three-day strip, mobile + desktop viewports |
 
-Do not log notification payloads or emails if Auth is wired up later.
+```text
+dev     pnpm dev
+check   pnpm check
+test    pnpm test
+build   pnpm build
+start   pnpm start
+```
 
-## 8. Testing and commands
+`check` is `nuxt typecheck` plus domain `tsc`. `test` is Japa (`tsx bin/test.ts`).
 
-Cheapest tests that prove behavior:
+## 9. Package manager and hosting
 
-1. Lint (`npm run lint`)
-2. Unit: mixins, Firestore helpers against emulator
-3. Cypress: home load, cached timetable, district-ish navigation, debug panel
+Use **pnpm** (pinned in `packageManager`). Commit `pnpm-lock.yaml`. Do not add npm or `package-lock.json`.
 
-| Intent | Actual command |
+Pin Node in `.nvmrc` / `engines` (`>=20`).
+
+Deploy: **new** Netlify site, Nitro preset, Netlify Scheduled Function for ingest. Public pages must not need a new deploy to show a new month.
+
+## 10. UI / UX foundation (v1 minimal)
+
+### Visual tokens
+
+| Token | v1 value | Notes |
+| --- | --- | --- |
+| Background | `#0C1210` | Near-black with green in the ink |
+| Surface | `#121A17` | Only for the district bar / admin |
+| Text | `#E8E4D8` | Warm paper |
+| Mute | `#8B9188` | Inactive prayers |
+| Now | `#D4B45A` | Gold, used only for current prayer + countdown |
+| Rule | `1px` `#24302B` | Hairlines, no drop shadows |
+| Display type | Fraunces | Times and countdown |
+| UI type | Source Sans 3 | Labels, districts, dates |
+| Radius | `0` | No cards |
+| Space | 8px grid | `clamp` for type and padding |
+
+No Vuetify, no Icon soup. One refresh control, three district names, KHEU attribution.
+
+### Layout
+
+**Mobile (< 768px)**
+
+- Column: Hijri + Masihi → monumental current time → countdown line → remaining prayers → district bar pinned to the bottom (`env(safe-area-inset-bottom)`).
+- Days: horizontal snap strip (Hari ini / Esok / Lusa), not a full-screen carousel.
+- Type: current time `clamp(3.5rem, 18vw, 6rem)`.
+
+**Desktop (≥ 768px)** and **wide (≥ 1200px)**
+
+- Two panes. Left: current prayer name, huge time, countdown. Right: the rest of the day's times as a vertical list with the gold row aligned to a baseline, not a card.
+- Day switch: text tabs, keyboard left/right.
+- Max content width ~1120px, centered. Do not stretch a phone column to 4K.
+
+Both: `prefers-reduced-motion` disables countdown pulse. Hit targets ≥ 44px. Contrast WCAG AA for text and gold-on-ink.
+
+### Motion
+
+Only two: (1) countdown digit change, (2) 15-minute-warning pulse on the gold line. No page transitions in v1.
+
+### Copy
+
+Malay, short, same voice as today ("lagi kn masuk waktu", "Sudah masuk waktu"). Sumber: KHEU link.
+
+## 11. Phases
+
+| Phase | Outcome | Proof |
+| --- | --- | --- |
+| 0 | This spec accepted | You say go |
+| 1 | Domain + Japa unit tests cloned from v1 behaviour | `pnpm test` green |
+| 1b | KHEU HTML spike: lock fetch URL + fixture | **Done.** Functional tests parse saved Jan 2024 HTML, Feb 2024 HTML, and Jan 2026 All Items rows |
+| 2 | Nuxt 4 scaffold, TS strict, timetable read API | **Done.** `pnpm check` + `pnpm build`; `pnpm dev` serves `/` and `/api/prayers` |
+| 3 | Minimal UI (home + districts + 3 days) at both viewports | **Done.** Browser tests; visual pass on 390px and 1280px |
+| 4 | Ingest route + Netlify cron + admin secret fallback | **Done.** Functional ingest; Blobs write; unauthenticated write denied |
+| 5 | Notifications, PWA, and Google Analytics | **Done.** GA on the new Netlify site |
+| 6 | Delete leftover Vue 2 `src/`, Jest, Cypress, Vuetify | **Done.** `git grep` clean; architecture doc rewritten to as-is |
+
+### Behaviour that survives
+
+- District offsets 0 / +1 / +3
+- Today + next two days
+- Next-day Imsak/Subuh attached after Isya
+- Hijri day bump after Maghrib before midnight
+- Countdown Malay strings
+- 15-minute highlight
+- Notify at the minute a prayer starts
+- Cache + version refresh
+
+## 12. Risks and revisit triggers
+
+| Risk | Mitigation |
 | --- | --- |
-| `dev` | `npm run serve` (emulator in another terminal) |
-| `check` | `npm run lint` |
-| `test` | `npm run test:unit` then `npm run test:e2e` |
-| `build` | `npm run build` |
-| `start` | serve `dist/` (not scripted; Netlify does this) |
+| KHEU HTML markup changes | Fixture tests; admin paste; ingest alerts |
+| SharePoint blocks the cron IP | Retry/backoff; operator sync-now |
+| Nuxt on Netlify serverless cold starts | Public read can stay JSON/Blob behind `/api/prayers` |
+| Japa does not mount Vue SFC | Do not fight it; domain + browser tests |
+| Scope creep into "design system" | Tokens in this spec only |
 
-`tests/unit/example.spec.js` imports a missing `HelloWorld.vue` — treat as dead. Firestore unit tests require the emulator.
+Revisit when:
 
-CI is not defined in-repo. Revisit when there is a hosted pipeline.
+- KHEU publishes a stable JSON/CSV — delete HTML parsing.
+- Ingest must retry for hours unattended — then a durable queue is justified.
+- A second client (e.g. native) needs the same domain — then a `packages/prayer` workspace.
 
-## 9. Package manager
+### Decisions
 
-**Keep npm.** This is a small, stable single-package app with an existing lockfile. pnpm would be a migration without measured install/disk/CI benefit.
+1. **Cron: Netlify Scheduled Function** on the **new** Netlify site, calling `POST /api/ingest`.
+2. **Keep Google Analytics** as a feature on the new site (new or existing measurement ID).
+3. **This is a new project.** Clone prayer *functions* from the Vue 2 app. Do not share its Firebase project, Firestore data, Netlify site, or npm lockfile. Months `1`–`12` from day one.
+4. **Storage: JSON file, then Netlify Blobs.** Firestore Spark would be free at this size, but it adds a Google project, Admin SDK, emulator, and rules for ~12 month documents. Skip it unless Blobs cannot hold the year JSON.
 
-Pin policy: lockfile is source of truth; do not add `packageManager` until a toolchain forces it.
+## 13. Readiness (this spec)
 
-Unused declared dependencies (candidates to delete when next touching `package.json`): `vue-resource`, `lodash`. `axios` is used by the emulator flush.
-
-## 10. Incremental plan
-
-Do **not** rewrite. Order if work continues:
-
-1. **Fix now:** Firestore rules + admin authentication. Add a test that unauthenticated writes fail.
-2. **Fix now / cheap:** delete or skip `example.spec.js`; clear admin loading state on error.
-3. **Improve incrementally:** validate TSV rows; wrap month+metadata writes; replace `eventBus` with Vuex only if a third subscriber appears.
-4. **Delete:** unused `vue-resource` and `lodash` after confirming no dynamic use.
-5. **Defer:** Vue 3, TypeScript, pnpm, calculated (non-KHEU) times.
-
-Rollback: revert the git commit; Firestore rules rollback via Firebase console; data rollback by re-uploading the previous month TSV.
-
-## 11. Risks, questions, revisit triggers
-
-**Risks**
-
-- Open Firestore rules mean anyone who finds `/admin` or the project ID can overwrite the national timetable.
-- Import cycle through `eventBus` in `main.js` makes unit-testing Home harder.
-- Vue CLI 4 / `node-sass` will break on newer Node versions.
-- Hijri date bump after Maghrib is string/regex based, not a real calendar.
-
-**Unanswered (non-blocking)**
-
-- Is production Firestore still world-writable?
-- Who currently performs the monthly upload?
-
-**Revisit triggers**
-
-| Change | Trigger |
-| --- | --- |
-| Second deployable (API/worker) | Need server-side secrets, cron ingest, or auth you cannot do in Firestore rules |
-| Shared package | Two apps consume the same prayer-time parser |
-| Vue 3 | Vue 2 security/support end plus a feature that needs the new compiler |
-| pnpm | Measured install or CI time problem on this repo |
-| PostgreSQL | Firestore access patterns fail (ad-hoc query, reporting) |
-| Queue | Monthly ingest must retry durably without a human at `/admin` |
-
-## 12. Readiness checklist
-
-### Boundaries
-
-- [x] One SPA with a named purpose
-- [x] Dependencies mostly views → store → Firebase
-- [x] No unjustified shared packages or extra services
-- [ ] Import cycle via `eventBus` (known; defer)
-
-### Correctness and data
-
-- [ ] Admin TSV not schema-validated
-- [ ] Month + metadata writes not transactional
-- [x] Time handled at the UI boundary
-- [x] No money/PII domains
-- [ ] No durable delivery for ingest
-
-### Security and operation
-
-- [ ] Admin not authenticated
-- [ ] Firestore rules are open
-- [x] No server secrets in repo beyond the public Firebase web config
-- [ ] No backup/restore runbook in-repo
-
-### Developer experience
-
-- [x] Quick start: `npm install`, emulator, `npm run serve`
-- [ ] No CI
-- [x] npm lockfile committed
-- [x] Cypress covers the home journey with fixture data
-
-### Simplicity
-
-- [x] Single deployable, single database
-- [x] No placeholder services
-- [x] Request flow can be explained without extra layers
+- [x] One Nuxt deployable, one JSON timetable, no extra packages
+- [x] Domain vs UI vs server named and directional
+- [x] Ingest has a real source (KHEU HTML) and a fallback
+- [x] TypeScript + Japa commands defined
+- [x] v1 visual rules small enough to implement without a design tool
+- [x] Cron host: Netlify Scheduled Function
+- [x] Analytics kept (new site)
+- [x] New project: own Netlify, no v1 data, no new Firebase
+- [x] pnpm (`packageManager` + `pnpm-lock.yaml`)
+- [x] Phase 1 done (domain + Japa)
+- [x] Phase 1b done (KHEU HTML + All Items fixtures)
+- [x] Phase 2 done (Nuxt 4 + file-backed `/api/prayers`)
+- [x] Phase 3 done (minimal clock UI)
+- [x] Phase 4 done (ingest + admin + cron)
+- [x] Phase 5 done (notifications, PWA, GA)
+- [x] Phase 6 done (cleanup legacy Vue 2, Jest, Cypress, Firebase)
 
 ## Graphify
 
@@ -276,8 +362,8 @@ Code graph is in `graphify-out/`. Cursor loads `.cursor/rules/graphify.mdc` and 
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
-graphify query "how does getPrayerData choose localStorage vs Firestore"
-graphify path "uploadData" "updateMetadata"
+graphify query "how current prayer is chosen"
+graphify path "parseKheuTsv" "assertCompleteMonth"
 graphify explain "CountDown"
 graphify update .          # after code changes (AST only)
 ```

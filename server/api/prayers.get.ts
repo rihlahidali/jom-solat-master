@@ -1,5 +1,5 @@
-export default defineEventHandler(() => {
-  const timetable = getTimetable();
+export default defineEventHandler(async () => {
+  const timetable = await getTimetable();
   const availableMonths = Object.keys(timetable.months)
     .map(Number)
     .filter((month) => month >= 1 && month <= 12)

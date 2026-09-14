@@ -9,3 +9,5 @@ export type TimetableYear = {
   source: TimetableSource | null;
   months: Partial<Record<string, PrayerDay[]>>;
 };
+
+export type MonthDays = PrayerDay[];

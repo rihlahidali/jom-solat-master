@@ -26,6 +26,7 @@
   "devDependencies": {
     "@japa/assert": "^4.2.0",
     "@japa/runner": "^5.3.0",
+    "@netlify/blobs": "^11.0.0",
     "@types/node": "^24.5.2",
     "tsx": "^4.23.13",
     "typescript": "^5.9.2",
