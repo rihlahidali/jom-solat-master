@@ -9,6 +9,11 @@ import {
 } from "../utils/timetable_store";
 
 export default defineEventHandler(async (event) => {
+  if (!process.env.INGEST_SECRET) {
+    setResponseStatus(event, 500);
+    return { error: "Server misconfigured: INGEST_SECRET is not set" };
+  }
+
   const secret = getRequestHeader(event, "authorization")?.replace("Bearer ", "");
   if (secret !== process.env.INGEST_SECRET) {
     setResponseStatus(event, 401);
