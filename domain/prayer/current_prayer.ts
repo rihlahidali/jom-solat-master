@@ -7,7 +7,7 @@ import {
   isBefore,
   subSeconds,
 } from "date-fns";
-import ms from "date-fns/locale/ms";
+import ms from "date-fns/locale/ms/index.js";
 import type { PrayerClock, TimedPrayer } from "./prayer";
 
 const CORE_PRAYER_COUNT = 8;
