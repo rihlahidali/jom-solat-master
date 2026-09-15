@@ -1,4 +1,4 @@
-# Waktu Sembahyang Brunei
+# Jom Solat
 
 A progressive web app that shows daily Islamic prayer times for Brunei, using the official timetable from [Kementerian Hal Ehwal Ugama (KHEU)](https://www.mora.gov.bn/lists/waktusolat/waktusolat.aspx).
 

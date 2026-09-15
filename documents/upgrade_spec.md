@@ -1,4 +1,4 @@
-# Spec — Waktu Sembahyang Brunei upgrade
+# Spec — Jom Solat upgrade
 
 Status: proposed  
 Date: 2026-09-05  

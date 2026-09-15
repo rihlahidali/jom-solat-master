@@ -1,4 +1,4 @@
-# Project architecture — Waktu Sembahyang Brunei
+# Project architecture — Jom Solat
 
 **As-is:** a **single-package Nuxt 4 + TypeScript app** with **file-backed JSON timetable** and **Netlify deploy**.
 

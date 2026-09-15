@@ -17,7 +17,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: "Waktu Sembahyang Brunei",
+      title: "Jom Solat",
       htmlAttrs: { lang: "ms" },
       link: [
         { rel: "preconnect", href: "https://fonts.googleapis.com" },

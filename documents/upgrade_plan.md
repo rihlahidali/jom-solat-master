@@ -1,4 +1,4 @@
-# Upgrade plan — Waktu Sembahyang Brunei
+# Upgrade plan — Jom Solat
 
 ## Current state
 
